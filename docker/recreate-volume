@@ -1,0 +1,6 @@
+#!/bin/bash
+
+VOLUME_NAME=$1
+
+docker volume rm $VOLUME_NAME
+docker volume create $VOLUME_NAME

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CONTAINER_NAME=$1
+MOUNTING_POINT=${2:-/}
+
+docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd):/backup alpine sh -c "cd $MOUNTING_POINT && tar xvf /backup/$CONTAINER_NAME.tar --strip 1"

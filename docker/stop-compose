@@ -1,0 +1,5 @@
+#!/bin/bash
+
+CONTAINER_NAME=$1
+
+docker-compose -f $CONTAINER_NAME/docker-compose.yml down

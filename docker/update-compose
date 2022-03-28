@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CONTAINER_NAME=$1
+
+#docker-compose -f $1/docker-compose.yml down && docker-compose -f $1/docker-compose.yml pull && docker-compose -f $1/docker-compose.yml up -d
+docker-compose -f $CONTAINER_NAME/docker-compose.yml pull && docker-compose -f $CONTAINER_NAME/docker-compose.yml down && docker-compose -f $CONTAINER_NAME/docker-compose.yml up -d
