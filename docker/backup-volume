@@ -1,6 +1,6 @@
 #!/bin/bash
 
 CONTAINER_NAME=$1
-MOUNTING_POINT=${2:-/}
+MOUNTING_POINT=${2:-/}    #Uses / as default value
 
-docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd):/backup alpine tar cvf /backup/$CONTAINER_NAME.tar $MOUNTING_POINT
+docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd):/backup alpine:latest tar cvf /backup/$CONTAINER_NAME.tar $MOUNTING_POINT

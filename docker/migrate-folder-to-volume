@@ -1,0 +1,9 @@
+#!/bin/bash
+
+FOLDER_PATH=$1
+VOLUME_NAME=$2
+
+docker volume create $2
+
+#Copies the content of the folder to the newly created volume
+docker run --rm -v $1:/from -v $2:/to alpine:latest cp -a /from/. /to
