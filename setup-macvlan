@@ -1,11 +1,14 @@
+#!/bin/bash
 #Info: https://stackoverflow.com/a/63806806/13357744
 #Script is started by cron
+
+IP_ADDRESS=$1
 
 ip link add docker-lan link eth0 type macvlan mode bridge
 #ip link set docker-lan dynamic off
 
-ip addr add 192.168.1.7/32 dev docker-lan
-#ip addr add 192.168.1.22/32 dev docker-lan
+ip addr add $IP_ADDRESS/32 dev docker-lan
+
 ip link set docker-lan up
 
 ip route add 192.168.1.96/27 dev docker-lan
