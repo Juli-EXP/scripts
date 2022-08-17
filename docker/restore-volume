@@ -2,5 +2,8 @@
 
 CONTAINER_NAME=$1
 MOUNTING_POINT=${2:-/}    #Uses / as default value
+NEW_VOLUME_NAME=$3
 
-docker run --rm --volumes-from $CONTAINER_NAME -v $(pwd):/backup alpine:latest sh -c "cd $MOUNTING_POINT && tar xvf /backup/$CONTAINER_NAME.tar --strip 1"
+docker volume create $NEW_VOLUME_NAME
+
+docker run --rm -v $(pwd):/backup -v $NEW_VOLUME_NAME:$MOUNTING_POINT alpine:latest sh -c "cd $MOUNTING_POINT && tar xvf /backup/$CONTAINER_NAME.tar --strip 1"
