@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker ps -f "label=diun.enable=true" --format "table {{.Image}}\t{{.Names}}"
