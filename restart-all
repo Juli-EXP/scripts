@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ansible all_hosts -b -K -a "reboot"
