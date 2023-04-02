@@ -4,7 +4,7 @@
 
 IP_ADDRESS=$1
 
-ip link add docker-lan link eth0 type macvlan mode bridge
+ip link add docker-lan link enp3s0 type macvlan mode bridge
 #ip link set docker-lan dynamic off
 
 #ip addr add $IP_ADDRESS dev docker-lan
