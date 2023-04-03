@@ -8,10 +8,64 @@
 if [ $# -ne 1 ]; then
     >&2 echo "Not enough arguments"
     echo "Usage: $(basename "$0") [file]"
-    echo "The file must have the followig format. Each element must be separated by spaces"
+    echo "The file must have the followig format with one service per line. Each element must be separated by spaces"
     echo "[service name] [hostname / ip] [port] [domain]"
     exit 1
 fi
 
+SERVICES_FILE=$1
+TRAEFIK_FILE=traefik.yaml
 
 
+############################################################################################################################
+# Read the file line by line into the arrary; One service per line
+readarray -t services < $SERVICES_FILE
+
+
+############################################################################################################################
+# TODO: add option to enable tcp requests
+# Start the file with "http" to enable http requests
+echo "http:" >> $TRAEFIK_FILE
+
+
+############################################################################################################################
+# Generate routers for each service
+echo "  routers:" >> $TRAEFIK_FILE
+
+for service in "${services[@]}"
+do
+    # Split string into array, split by spaces
+    IFS=" " read -ra serviceArray <<< $service
+    #for x in "${serviceArray[@]}"
+    #do
+    #    echo $x
+    #done
+
+    {
+        echo "    ${serviceArray[0]}:"
+        echo "      rule: \"Host(\`${serviceArray[3]}\`)\""
+        echo "      service: ${serviceArray[0]}"
+    } >> $TRAEFIK_FILE
+done
+
+
+############################################################################################################################
+# Generate each service
+echo "  services:" >> $TRAEFIK_FILE
+
+for service in "${services[@]}"
+do
+    # Split string into array, split by spaces
+    IFS=" " read -ra serviceArray <<< $service
+    #for x in "${serviceArray[@]}"
+    #do
+    #    echo $x
+    #done
+
+    {
+        echo "    ${serviceArray[0]}:"
+        echo "      loadbalancer:"
+        echo "        servers:"
+        echo "        - url: http://${serviceArray[1]}:${serviceArray[2]}" 
+    } >> $TRAEFIK_FILE
+done
