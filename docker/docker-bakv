@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Script to backup a docker volume to a .tar archive
+
+if [ $# -ne 1 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [volume]"
+    exit 1
+fi
+
+VOLUME_NAME=$1
+
+docker run --rm -v $VOLUME_NAME:/data -v $(pwd):/dest alpine:latest ash -c "tar -cvf /dest/$VOLUME_NAME.backup.tar /data/."

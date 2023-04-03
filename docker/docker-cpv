@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Script to copy all files from one volume to another
+
+if [ $# -ne 2 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [old volume] [new volume]"
+    exit 1
+fi
+
+VOLUME_NAME_OLD=$1
+VOLUME_NAME_NEW=$2
+
+docker run --rm -v $VOLUME_NAME_OLD:/from -v $VOLUME_NAME_NEW:/to alpine:latest ash -c "cp -av /from/. /to"
