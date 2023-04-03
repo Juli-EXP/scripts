@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Auhtor: Julian Lamprecht
+# V1.0
+
+# Script to generate a valid dynamic yaml config for traefik
+
+if [ $# -ne 1 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [file]"
+    echo "The file must have the followig format. Each element must be separated by spaces"
+    echo "[service name] [hostname / ip] [port] [domain]"
+    exit 1
+fi
+
+
+
