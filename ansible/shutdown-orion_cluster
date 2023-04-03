@@ -1,3 +1,0 @@
-#!/bin/bash
-
-ansible orion_cluster -b -K -a "shutdown now"
