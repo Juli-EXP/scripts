@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Auhtor: Julian Lamprecht
+# V1.0
+
 # Script to backup a docker volume to a .tar archive
 
 if [ $# -ne 1 ]; then

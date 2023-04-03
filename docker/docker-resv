@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Auhtor: Julian Lamprecht
+# V1.0
+
+# Script to restore a volume from a .tar archive
+
 if [ $# -ne 2 ]; then
     >&2 echo "Not enough arguments"
     echo "Usage: $(basename "$0") [.tar archive path] [volume]"

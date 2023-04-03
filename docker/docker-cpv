@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Auhtor: Julian Lamprecht
+# V1.0
+
 # Script to copy all files from one volume to another
 
 if [ $# -ne 2 ]; then

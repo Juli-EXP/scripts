@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Auhtor: Julian Lamprecht
+# V1.0
+
 # Script to run ash in a container
 
 if [ $# -ne 1 ]; then
