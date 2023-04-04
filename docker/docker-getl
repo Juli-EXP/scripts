@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Script to get all containers with a specific label
+
+if [ $# -ne 1 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [label]"
+    exit 1
+fi
+
+LABEL_NAME=$1
+
+docker ps -f "label=$LABEL_NAME" --format "table {{.Image}}\t{{.Names}}"
+
