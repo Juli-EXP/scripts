@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Auhtor: Julian Lamprecht
+# V1.0
+
+# Script to delete everything from a volume
+
+if [ $# -ne 1 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [volume]"
+    exit 1
+fi
+
+VOLUME_NAME=$1
+
+echo "Do you really want to delete all files from ${VOLUME_NAME}?"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) echo "Deleting files..."; break;;
+        No ) exit;;
+    esac
+done
+
+docker run --rm -v $VOLUME_NAME:/data alpine:latest ash -c "rm -rfv /data/*"
