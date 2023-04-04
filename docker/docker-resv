@@ -14,4 +14,4 @@ fi
 ARCHIVE_PATH=$1
 VOLUME_NAME=$2
 
-docker run --rm -v $VOLUME_NAME:/data -v $ARCHIVE_PATH:/archive/backup.tar alpine:latest ash -c "tar -xvf /archive/backup.tar -C /"
+docker run --rm -v $VOLUME_NAME:/data -v $(realpath "$ARCHIVE_PATH"):/archive/backup.tar alpine:latest ash -c "tar -xvf /archive/backup.tar -C /"
