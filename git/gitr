@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Auhtor: Julian Lamprecht
+# V1.0
+
+# Script to execute the git command in all repos in the current directory
+
+if [ $# -ne 1 ]; then
+    >&2 echo "Not enough arguments"
+    echo "Usage: $(basename "$0") [git command, e.g. status]"
+    exit 1
+fi
+
+for f in $(find . -maxdepth 2 -mindepth 1 -type d -name .git | awk -F"/.git$" '{print $1}');  do
+    echo
+    echo "................................ (cd $f && git $*) ........................................."
+    echo
+    (cd $f && git $*)
+done
