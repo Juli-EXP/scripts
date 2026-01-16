@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# Script to list all Grub menu entries and subentries
+
+# Function to find Grub configuration file
+find_grub_cfg() {
+    local grub_cfg=""
+    
+    # Check common locations
+    if [ -f "/boot/grub/grub.cfg" ]; then
+        grub_cfg="/boot/grub/grub.cfg"
+    elif [ -f "/boot/grub2/grub.cfg" ]; then
+        grub_cfg="/boot/grub2/grub.cfg"
+    else
+        # Try EFI locations
+        grub_cfg=$(find /boot/efi -name "grub.cfg" 2>/dev/null | head -n1)
+    fi
+    
+    echo "$grub_cfg"
+}
+
+# Function to count occurrences of a character in a string
+count_char() {
+    local str="$1"
+    local char="$2"
+    local count=0
+    local temp="$str"
+    while [[ "$temp" == *"$char"* ]]; do
+        ((count++))
+        temp="${temp#*$char}"
+    done
+    echo $count
+}
+
+# Function to extract and display menu entries
+list_grub_entries() {
+    local grub_cfg="$1"
+    
+    if [ -z "$grub_cfg" ] || [ ! -f "$grub_cfg" ]; then
+        echo "Error: Grub configuration file not found!" >&2
+        echo "Checked locations:" >&2
+        echo "  - /boot/grub/grub.cfg" >&2
+        echo "  - /boot/grub2/grub.cfg" >&2
+        echo "  - /boot/efi/EFI/*/grub.cfg" >&2
+        exit 1
+    fi
+    
+    echo "Grub Configuration File: $grub_cfg"
+    echo "=========================================="
+    echo ""
+    
+    local top_level_index=0
+    local submenu_parent_index=0
+    local submenu_entry_index=0
+    local in_submenu=false
+    local brace_depth=0
+    local just_entered_submenu=false
+    
+    while IFS= read -r line; do
+        # Check for submenu entry first
+        if [[ "$line" =~ ^[[:space:]]*submenu[[:space:]]+ ]]; then
+            # Don't display the submenu title, just mark that we're entering a submenu
+            # The parent index is the current top-level index
+            submenu_parent_index=$top_level_index
+            in_submenu=true
+            submenu_entry_index=0
+            # Count opening braces on the submenu line itself
+            brace_depth=$(count_char "$line" "{")
+        # Check for menuentry
+        elif [[ "$line" =~ ^[[:space:]]*menuentry[[:space:]]+ ]]; then
+            # Extract title between single quotes
+            if [[ "$line" =~ \'([^\']+)\' ]]; then
+                local title="${BASH_REMATCH[1]}"
+                if [ "$in_submenu" = true ]; then
+                    # Entry within a submenu: format as "N>M: Submenu:"
+                    echo "${submenu_parent_index}>${submenu_entry_index}: Submenu: $title"
+                    ((submenu_entry_index++))
+                else
+                    # Top-level entry: format as "N:"
+                    echo "${top_level_index}: Menu Entry: $title"
+                    ((top_level_index++))
+                fi
+            fi
+        fi
+        
+        # Track braces to detect end of submenu
+        # This must run for all lines when in_submenu=true, including the submenu line itself
+        # to properly track nested braces from menuentries within the submenu
+        if [ "$in_submenu" = true ]; then
+            # Only count braces if we didn't already count them when entering the submenu
+            # (i.e., if this is not the submenu declaration line)
+            if ! [[ "$line" =~ ^[[:space:]]*submenu[[:space:]]+ ]]; then
+                local open_braces=$(count_char "$line" "{")
+                local close_braces=$(count_char "$line" "}")
+                brace_depth=$((brace_depth + open_braces - close_braces))
+            fi
+            
+            # If brace_depth reaches 0 or below, we've closed the submenu
+            if [ $brace_depth -le 0 ]; then
+                in_submenu=false
+                brace_depth=0
+            fi
+        fi
+    done < "$grub_cfg"
+}
+
+# Main execution
+main() {
+    # Check if running as root (may be needed to read /boot)
+    if [ "$EUID" -ne 0 ] && [ ! -r "/boot/grub/grub.cfg" ] && [ ! -r "/boot/grub2/grub.cfg" ]; then
+        echo "Warning: May need root privileges to read Grub configuration." >&2
+        echo ""
+    fi
+    
+    local grub_cfg
+    grub_cfg=$(find_grub_cfg)
+    list_grub_entries "$grub_cfg"
+}
+
+# Run main function
+main
